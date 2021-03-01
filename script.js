@@ -8,10 +8,6 @@ xp.appendChild(episodeType);
 const prime = document.getElementById("review");
 const showItem = document.getElementById("show");
 
-// create element in html
-//declare a variable with that html element
-// populate it drop menu with shows
-// get value of selected show
 
 function setup() {
   makePageForEpisodes(allEpisodes);
