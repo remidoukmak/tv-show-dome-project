@@ -6,8 +6,13 @@ const episodeType = document.createElement("kinds");
 const xp = document.getElementById("joyfulTime");
 xp.appendChild(episodeType);
 const prime = document.getElementById("review");
-const showItem = document.getElementById("show");
+// const showItem = document.getElementById("show");
+const showsDropdown = document.getElementById("show");
 
+// create element in html
+//declare a variable with that html element
+// populate it drop menu with shows
+// get value of selected show
 
 function setup() {
   makePageForEpisodes(allEpisodes);
@@ -15,11 +20,18 @@ function setup() {
 
 function makePageForEpisodes(episodeList) {
   episodeList.forEach((item) => {
+    let image;
+    if (item.image) {
+      image = item.image.medium;
+    } else {
+      image =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png";
+    }
     rootElem.insertAdjacentHTML(
       "afterbegin",
       `<div class="episode">
 <h2>${item.name}</h2></div>
-<img src="${item.image.medium}" alt="">
+<img src="${image}" alt="">
 <br>
 ${item.summary}
 ${item.season.toString().padStart(2, 0)}E${item.number.toString()}
@@ -68,7 +80,7 @@ searchFunction(allEpisodes);
 
 //select drop down bar
 
-function dropDown(arr) {
+function dropDownEpisodes(arr) {
   let drops = `<option value='1' >See all episodes</option>`;
   arr.forEach((item) => {
     drops += `<option value="${item.id}"> 
@@ -79,13 +91,13 @@ function dropDown(arr) {
   prime.innerHTML = "";
   prime.insertAdjacentHTML("afterbegin", drops);
 }
-dropDown(allEpisodes);
+dropDownEpisodes(allEpisodes);
 
 searchFunction(allEpisodes);
 function selectMenu(epList) {
   prime.addEventListener("change", (e) => {
     e.preventDefault();
-    const searchId = +e.target.value;
+    const searchId = Number(e.target.value);
     let filteredList = [];
     console.log(searchId);
     if (searchId === 1) {
@@ -118,7 +130,7 @@ window.onload = setup;
 //     renderError(`Something wen wrong ${err.message}`);
 //   });
 
-getAllShows();
+// getAllShows();
 
 const allShows = getAllShows();
 console.log(allShows);
@@ -131,45 +143,49 @@ console.log(allShows);
 
 function listShows(shows) {
   let tvShow = `<option value='1' >See all shows</option>`;
-  shows.sort(items => items.forEach((items) => {
-    tvShow += `<option value="${items.id}"> 
-      // S${item.season.toString().padStart(2, 0)}
-      // E${item.number.toString().padStart(2, 0)}
-      ${item.name}</option>`;
-  }));
-    
-  
-  show.innerHTML = "";
+  // shows.sort((items) =>
+  shows.sort(sortShows).forEach((item) => {
+    tvShow += `<option value="${item.id}"> 
+    ${item.name}</option>`;
+  });
+
+  showsDropdown.innerHTML = "";
   //replace prime with show
 
-  show.insertAdjacentHTML("afterbegin", tvShow);
+  showsDropdown.insertAdjacentHTML("afterbegin", tvShow);
 }
 
-
-function dropDown(shows) {
-  selection.addEventListener("change", (m))) => {
-    const searchId = +m, target.value;
-    let filteredlist = [];
-    if (searchId === 0) {
-      filteredList = shows;
-    }
-    else {
-      filteredList = shows.filter(popcorn) => {
-        return popcorn.id = searchId;
-      };
-    }
-    
-    show.innerHTML = "";
-    makePageForEpisodes(filteredList);
-    
+function sortShows(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  } else {
+    return 1;
+  }
 }
 
+function dropDownShows(shows) {
+  showsDropdown.addEventListener("change", (m) => {
+    const searchId = m.target.value;
+    fetch(`https://api.tvmaze.com/shows/${searchId}/episodes`)
+      .then(function (response) {
+        let parsed = response.json();
+        return parsed;
+      })
+      .then(function (episodes) {
+        console.log(episodes);
+        makePageForEpisodes(episodes);
+        dropDownEpisodes(episodes);
+      });
+  });
+  listShows(shows);
+}
+dropDownShows(allShows);
 
-function selectMenu(epList) {
+function selectMenuEpisodes(epList) {
   //taking epList
   prime.addEventListener("change", (e) => {
     e.preventDefault();
-    const searchId = +e.target.value;
+    const searchId = e.target.value;
     let filteredList = [];
     console.log(searchId);
     if (searchId === 1) {
@@ -184,3 +200,17 @@ function selectMenu(epList) {
     makePageForEpisodes(filteredList);
   });
 }
+
+//   marker.addListener("click", () => {
+//     map.setZoom(8);
+//     map.setCenter(marker.getPosition() as google.maps.LatLng);
+//   });
+// }
+
+// $(document).ready(function() {
+//   $(".toggle-button").click(function() {
+//     $(this).parent().find("ul").slideToggle(function() {
+//       // Animation complete.
+//     });
+//   });
+// })
