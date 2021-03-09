@@ -6,16 +6,17 @@ const episodeType = document.createElement("kinds");
 const xp = document.getElementById("joyfulTime");
 xp.appendChild(episodeType);
 const prime = document.getElementById("review");
-// const showItem = document.getElementById("show");
 const showsDropdown = document.getElementById("show");
+// const allShows = document.getElementById("showsListing");
+const allShows = getAllShows();
 
 // create element in html
 //declare a variable with that html element
-// populate it drop menu with shows
+// populate drop menu with shows
 // get value of selected show
 
 function setup() {
-  makePageForEpisodes(allEpisodes);
+  makePageForShows(allShows);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -25,7 +26,7 @@ function makePageForEpisodes(episodeList) {
       image = item.image.medium;
     } else {
       image =
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/600px-No_image_available.svg.png";
+        "http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png";
     }
     rootElem.insertAdjacentHTML(
       "afterbegin",
@@ -132,9 +133,6 @@ window.onload = setup;
 
 // getAllShows();
 
-const allShows = getAllShows();
-console.log(allShows);
-
 // fetch("https://api.tvmaze.com/shows/SHOW_ID/episodes")
 //   .then(function (response) {
 //     return response.json();
@@ -165,7 +163,13 @@ function sortShows(a, b) {
 
 function dropDownShows(shows) {
   showsDropdown.addEventListener("change", (m) => {
-    const searchId = m.target.value;
+    const searchId = +m.target.value;
+    console.log(searchId);
+    if (searchId === 1) {
+      rootElem.innerHTML = "";
+      makePageForShows(allShows);
+      return "";
+    }
     fetch(`https://api.tvmaze.com/shows/${searchId}/episodes`)
       .then(function (response) {
         let parsed = response.json();
@@ -175,6 +179,7 @@ function dropDownShows(shows) {
         console.log(episodes);
         makePageForEpisodes(episodes);
         dropDownEpisodes(episodes);
+        selectMenuEpisodes(episodes);
       });
   });
   listShows(shows);
@@ -185,11 +190,14 @@ function selectMenuEpisodes(epList) {
   //taking epList
   prime.addEventListener("change", (e) => {
     e.preventDefault();
-    const searchId = e.target.value;
+    const searchId = Number(e.target.value);
     let filteredList = [];
     console.log(searchId);
     if (searchId === 1) {
+      // rootElem.innerHTML = "";
+      // makePageForShows(allShows);
       filteredList = epList;
+      // return "";
     } else {
       filteredList = epList.filter((episode) => {
         return episode.id === searchId;
@@ -214,3 +222,40 @@ function selectMenuEpisodes(epList) {
 //     });
 //   });
 // })
+
+// function allShows(arr) {
+//   let drops = `<option value='1' >See all episodes</option>`;
+//   arr.forEach((item) => {
+//     drops += `<option value="${item.id}">
+//       S${item.season.toString().padStart(2, 0)}
+//       E${item.number.toString().padStart(2, 0)}
+//       ${item.name}</option>`;
+//   });
+//   prime.innerHTML = "";
+//   prime.insertAdjacentHTML("afterbegin", drops);
+// }
+// dropDownEpisodes(allEpisodes);
+function makePageForShows(allShows) {
+  // allShows.addEventListener("change", (e) => {
+  allShows.forEach((item) => {
+    let image;
+    if (item.image) {
+      image = item.image.medium;
+    } else {
+      image =
+        "http://www.staticwhich.co.uk/static/images/products/no-image/no-image-available.png";
+    }
+    rootElem.insertAdjacentHTML(
+      "afterbegin",
+      `<div class="episode">
+<h2>${item.name}</h2></div>
+<img src="${image}" alt="">
+<br>
+${item.summary}
+
+<br>
+<a href=${item.url}>Check the source</a>
+</div>`
+    );
+  });
+}
