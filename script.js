@@ -62,7 +62,6 @@ function searchFunction(episodeList) {
     makePageForEpisodes(filteredEpisodes);
   });
 }
-
 function dropDownEpisodes(arr) {
   let drops = `<option value='1' >See all episodes</option>`;
   arr.forEach((item) => {
@@ -96,29 +95,6 @@ function selectMenu(epList) {
 }
 selectMenu(allEpisodes);
 window.onload = setup;
-
-// fetch("https://xkcd.now.sh/?comic=latest")
-//   .then(function (response) {
-//     let parsed = response.json();
-//     console.log(parsed);
-//     return parsed;
-//   })
-//   .then(function (response) {
-//     console.log(response);
-//     boxImg.src = response.img;
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//     renderError(`Something wen wrong ${err.message}`);
-//   });
-
-// getAllShows();
-
-// fetch("https://api.tvmaze.com/shows/SHOW_ID/episodes")
-//   .then(function (response) {
-//     return response.json();
-//   })
-//   .then(function (data) {});
 
 function listShows(shows) {
   let tvShow = `<option value='1' >See all shows</option>`;
